@@ -21,7 +21,7 @@ import os
 import random
 import sys
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Union
 import json
 
 import datasets
@@ -52,6 +52,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
+from coral import CoralRobertaForSequenceClassification, CornLoss, label_to_levels_list, proba_to_label_np, corn_label_from_logits_np
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.28.0")
@@ -223,23 +224,32 @@ class ModelArguments:
         default=False,
         metadata={"help": "apply_class_weights"}
     )
+    label_smoothing: Optional[float] = field(
+        default=None,
+        metadata={"help": "label_smoothing"}
+    )
     # Ordinal classification   
     ordinal_classification: bool = field(
         default=False,
-        metadata={"help": "ordinal_classification, int2label must be set"}
+        metadata={"help": "ordinal_classification, label_list must be set"}
     )
     #Is regression
     class_regression: bool = field(
         default=False,
-        metadata={"help": "class order based regression, int2label must be set"}
+        metadata={"help": "class order based regression, label_list must be set"}
+    )
+    #Ordinal regression
+    ordinal_regression: bool = field(
+        default=False,
+        metadata={"help": "class order based ordinal regression, label_list must be set"}
     )
     #dist: str = field(
     #    default=None,
     #    metadata={"help": "dist matrix for ordinal_classification as json string"}
     #)
-    int2label: str = field(
+    label_list: str = field(
         default=None,
-        metadata={"help": "int2label matrix for ordinal_classification as json string"}
+        metadata={"help": "label_list order array as a comma separated values, necessary for ordinal_classification"}
     )
     oll_alpha: float = field(
         default=1.5,
@@ -252,6 +262,15 @@ class ModelArguments:
     head_limit: Optional[float] = field(
         default=None,
         metadata={"help": "Head limit for head+tail truncation"}
+    )
+    #Ordinal classification
+    coral_model: bool = field(
+        default=False,
+        metadata={"help": "use coral model"}
+    )
+    corn_model: bool = field(
+        default=False,
+        metadata={"help": "use corn model"}
     )
         
     #label_map: 
@@ -269,6 +288,8 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+        
+    
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -384,33 +405,34 @@ def main():
             )
     # See more about loading any type of standard or custom dataset at
     # https://huggingface.co/docs/datasets/loading_datasets.html.
-
+    
+    label_list = None
+    if model_args.label_list is not None:
+        if "[" in model_args.label_list:
+            label_list = json.loads(model_args.label_list)
+        else:
+            label_list = model_args.label_list.split(",")
+            try:
+                int(label_list[0])
+                label_list = [int(l) for l in label_list]
+            except:
+                pass
+    
     # Labels
     if data_args.task_name is not None:
         is_regression = data_args.task_name == "stsb"
         if not is_regression:
-            label_list = raw_datasets["train"].features["label"].names
+            _unique_labels = raw_datasets["train"].features["label"].names
+            
+            if label_list is None:
+                label_list = _unique_labels
+
+            assert len(_unique_labels) == len(label_list)
+            assert set(_unique_labels) == set(label_list)
+            
             num_labels = len(label_list)
         else:
             num_labels = 1
-    elif model_args.ordinal_classification:
-        is_regression = False
-        _unique_labels = raw_datasets["train"].unique("label")
-        label_list = json.loads(model_args.int2label)
-        
-        assert len(_unique_labels) == len(label_list)
-        assert set(_unique_labels) == set(label_list)
-
-        num_labels = len(label_list)
-    elif model_args.class_regression:
-        is_regression = True
-        _unique_labels = raw_datasets["train"].unique("label")
-        label_list = json.loads(model_args.int2label)
-        
-        assert len(_unique_labels) == len(label_list)
-        assert set(_unique_labels) == set(label_list)
-        
-        num_labels = 1
     else:
         # Trying to have good defaults here, don't hesitate to tweak to your needs.
         is_regression = raw_datasets["train"].features["label"].dtype in ["float32", "float64"]
@@ -419,9 +441,28 @@ def main():
         else:
             # A useful fast method:
             # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.unique
-            label_list = raw_datasets["train"].unique("label")
-            label_list.sort()  # Let's sort it for determinism
+            _unique_labels = raw_datasets["train"].unique("label")
+            
+            if label_list is None:
+                _unique_labels.sort() #Sort for determinism
+                label_list = _unique_labels
+
+            assert len(_unique_labels) == len(label_list)
+            assert set(_unique_labels) == set(label_list)
+            
             num_labels = len(label_list)
+            
+    if model_args.ordinal_classification:
+        is_regression = False
+    if model_args.coral_model:
+        is_regression = False
+    if model_args.corn_model:
+        is_regression = False
+    if model_args.class_regression:
+        is_regression = True
+        num_labels = 1
+    if model_args.ordinal_regression:
+        is_regression = True
 
     # Load pretrained model and tokenizer
     #
@@ -445,8 +486,12 @@ def main():
         
     if is_regression:
         config.problem_type = "regression"
-    if model_args.class_regression:
-        config.class_regression = True
+    #if model_args.class_regression:
+    config.class_regression = model_args.class_regression
+    #if model_args.coral_model:
+    config.coral_model= model_args.coral_model
+    config.corn_model= model_args.corn_model
+    config.num_labels = num_labels
     
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -455,7 +500,11 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    model = AutoModelForSequenceClassification.from_pretrained(
+    model_class = AutoModelForSequenceClassification
+    if model_args.coral_model or model_args.corn_model:
+        model_class= CoralRobertaForSequenceClassification
+    
+    model = model_class.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
@@ -465,6 +514,8 @@ def main():
         #ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
         ignore_mismatched_sizes=True,
     )
+    
+    logger.info(str(model))
     
     if model_args.ordinal_classification:
         def generate_dist_matrix(num_labels):
@@ -590,10 +641,13 @@ def main():
                 
         # Map labels to IDs (not necessary for GLUE tasks)
         if label_to_id is not None and "label" in examples:
-            if not model_args.class_regression:
-                result["label"] = [(label_to_id[l] if l != -1 else -1) for l in examples["label"]]
-            else:
+            if model_args.class_regression:
                 result["label"] = [(float(label_to_id[l]) if l != -1 else -1.0) for l in examples["label"]]
+            elif model_args.coral_model:
+                result["label"] = [(label_to_levels_list(label_to_id[l], num_labels) if l != -1 else -1.0) for l in examples["label"]]
+            else:
+                result["label"] = [(label_to_id[l] if l != -1 else -1) for l in examples["label"]]
+                
         return result
 
     with training_args.main_process_first(desc="dataset map pre-processing"):
@@ -639,16 +693,26 @@ def main():
         names = ["accuracy", "f1", "recall", "precision"]
         metric = {m: evaluate.load(m) for m in names}
         
-
+    
+    
     # You can define your custom compute_metrics function. It takes an `EvalPrediction` object (a namedtuple with a
     # predictions and label_ids field) and has to return a dictionary string to float.
     def compute_metrics(p: EvalPrediction):
         preds = p.predictions[0] if isinstance(p.predictions, tuple) else p.predictions
-        preds = np.squeeze(preds) if is_regression else np.argmax(preds, axis=1)
         references = p.label_ids
         
+        if is_regression:
+            preds = np.squeeze(preds)
+        elif model_args.corn_model:
+            preds = corn_label_from_logits_np(preds)
+        elif model_args.coral_model:
+            preds = proba_to_label_np(preds)
+            references = proba_to_label_np(references)
+        else:
+            preds = np.argmax(preds, axis=1)
+            
         if model_args.class_regression:
-            preds = np.round(preds).astype(int)
+            preds = np.clip(np.round(preds).astype(int), 0, len(label_list)-1)
             references = p.label_ids.astype(int)
         
         result = dict()
@@ -686,21 +750,24 @@ def main():
     
     model.config.apply_class_weights = model_args.apply_class_weights
     
-    class_weights = None
+    
     #Default Trainer class
     trainer_cls = Trainer
-    if model_args.apply_class_weights and not is_regression:
-        from sklearn.utils.class_weight import compute_class_weight
+    if (model_args.apply_class_weights or model_args.label_smoothing is not None) and not is_regression:
+        class_weights = None
+        label_smoothing = model_args.label_smoothing
+        if model_args.apply_class_weights:
+            from sklearn.utils.class_weight import compute_class_weight
+
+            computed_class_weights = compute_class_weight(
+                class_weight = 'balanced',
+                classes = [i for i in range(len(model.config.id2label))],
+                y = raw_datasets['train']['label']
+            )
+            logger.info(f'id2label: {model.config.id2label}')
+            logger.info(f'computed_class_weights: {computed_class_weights}')
+            class_weights = torch.tensor(computed_class_weights, dtype=torch.float, device=training_args.device)
         
-        computed_class_weights = compute_class_weight(
-            class_weight = 'balanced',
-            classes = [i for i in range(len(model.config.id2label))],
-            y = raw_datasets['train']['label']
-        )
-        logger.info(f'id2label: {model.config.id2label}')
-        logger.info(f'computed_class_weights: {computed_class_weights}')
-        class_weights = torch.tensor(computed_class_weights, dtype=torch.float, device=training_args.device)
-    
         class CustomTrainer(Trainer):
             def compute_loss(self, model, inputs, return_outputs=False):
                 labels = inputs.get("labels")
@@ -708,7 +775,7 @@ def main():
                 outputs = model(**inputs)
                 logits = outputs.get("logits")
                 # compute custom loss (suppose one has 3 labels with different weights)
-                loss_fct = nn.CrossEntropyLoss(weight=class_weights)
+                loss_fct = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=label_smoothing)
                 loss = loss_fct(logits.view(-1, model.num_labels), labels.view(-1))
                 return (loss, outputs) if return_outputs else loss
         
@@ -717,6 +784,7 @@ def main():
     elif model_args.ordinal_classification:
         oll_alpha = model_args.oll_alpha
         logger.info(f'oll_alpha: {oll_alpha}')
+        device = training_args.device
         class OLLTrainer(Trainer):
             def compute_loss(self, model, inputs, return_outputs=False):
                 num_classes = model.num_labels
@@ -728,7 +796,7 @@ def main():
                 true_labels = [num_classes*[labels[k].item()] for k in range(len(labels))]
                 label_ids = len(labels)*[[k for k in range(num_classes)]]
                 distances = [[float(dist_matrix[true_labels[j][i]][label_ids[j][i]]) for i in range(num_classes)] for j in range(len(labels))]
-                distances_tensor = torch.tensor(distances,device='cuda:0', requires_grad=True)
+                distances_tensor = torch.tensor(distances,device=device,requires_grad=True)
                 err = -torch.log(1-probas)*distances_tensor**(oll_alpha)
                 loss = torch.sum(err,axis=1).mean()
                 return (loss, outputs) if return_outputs else loss
@@ -840,7 +908,18 @@ def main():
             # Removing the `label` columns because it contains -1 and Trainer won't like that.
             predict_dataset = predict_dataset.remove_columns("label")
             predictions = trainer.predict(predict_dataset, metric_key_prefix="predict").predictions
-            predictions = np.squeeze(predictions) if is_regression else np.argmax(predictions, axis=1)
+            #predictions = np.squeeze(predictions) if is_regression else np.argmax(predictions, axis=1)
+            
+            if is_regression:
+                predictions = np.squeeze(predictions)
+                if model_args.class_regression:
+                    predictions = np.clip(np.round(predictions).astype(int), 0, len(label_list)-1)
+            elif model_args.corn_model:
+                predictions = corn_label_from_logits_np(predictions)
+            elif model_args.coral_model:
+                predictions = proba_to_label_np(predictions)
+            else:
+                predictions = np.argmax(predictions, axis=1)
 
             output_predict_file = os.path.join(training_args.output_dir, f"predict_results_{task}.txt")
             if trainer.is_world_process_zero():
