@@ -1,0 +1,47 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          5e-6,
+          8e-6,
+          9e-6,
+          1e-5
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "per_device_train_batch_size",
+        "choices": [
+          16,
+          32
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "warmup_steps",
+        "choices": [
+          50,
+          100,
+          500,
+          1000
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "dropout_task",
+        "choices": [
+          0.0,
+          0.15,
+          0.3
+        ]
+      }
+    }
+]

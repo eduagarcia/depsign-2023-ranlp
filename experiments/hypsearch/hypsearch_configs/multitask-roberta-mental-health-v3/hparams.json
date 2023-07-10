@@ -1,0 +1,43 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          2e-6,
+          4e-6,
+          6e-6
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "num_warmup_steps",
+        "choices": [
+          200,
+          400
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "dropout_task",
+        "choices": [
+          0.0,
+          0.4
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "sample_type",
+        "choices": [
+          "main-uniform",
+          "size-proportional"
+        ]
+      }
+    }
+]

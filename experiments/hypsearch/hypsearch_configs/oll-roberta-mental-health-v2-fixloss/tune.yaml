@@ -1,0 +1,32 @@
+script_path: run_glue.py
+train_file: /raid/juliana/depsign/data/train_initial.csv
+validation_file: /raid/juliana/depsign/data/dev_data.csv
+test_file: /raid/juliana/depsign/data/dev_data.csv
+model_name_or_path: /raid/juliana/depsign/edu/models/roberta-large-mental-health-v1
+do_train: true
+do_eval: true
+do_predict: true
+per_device_train_batch_size: 8
+learning_rate: 2e-6
+warmup_steps: 200
+dropout_task: 0.4
+num_train_epochs: 100
+#max_steps: 10000
+evaluation_strategy: epoch
+save_strategy: epoch
+#eval_steps: 500
+#save_steps: 500
+save_total_limit: 1
+metric_for_best_model: "f1 (macro)"
+greater_is_better: "True"
+load_best_model_at_end: True
+early_stopping_patience: 2
+early_stopping_threshold: 0.0025
+apply_class_weights: False
+max_seq_length: 512
+weight_decay: 0.0
+adam_epsilon: 1e-8
+head_limit: 0.5
+ordinal_classification: True
+int2label: "[\\\"not depression\\\", \\\"moderate\\\", \\\"severe\\\"]"
+oll_alpha: 1.5

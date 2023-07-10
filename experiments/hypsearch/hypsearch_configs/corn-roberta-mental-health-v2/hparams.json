@@ -1,0 +1,39 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          5e-6,
+          8e-6,
+          9e-6,
+          1e-5,
+          2e-5,
+          3e-5
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "dropout_task",
+        "choices": [
+          0.0,
+          0.1,
+          0.2
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "weight_decay",
+        "choices": [
+          0.0,
+          0.01,
+          0.05
+        ]
+      }
+    }
+    
+]

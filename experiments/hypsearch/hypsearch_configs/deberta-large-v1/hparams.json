@@ -1,0 +1,26 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          5e-6,
+          1e-5,
+          5e-5,
+          1e-4,
+          5e-4
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "gradient_accumulation_steps",
+        "choices": [
+          1,
+          2,
+          4
+        ]
+      }
+    }
+]

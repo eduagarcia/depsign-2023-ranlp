@@ -1,0 +1,33 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          5e-6,
+          1e-5,
+          2e-5
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "num_warmup_steps",
+        "choices": [
+          100,
+          200
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "sample_type",
+        "choices": [
+          "main-uniform",
+          "size-proportional"
+        ]
+      }
+    }
+]

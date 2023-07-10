@@ -1,0 +1,34 @@
+[
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "learning_rate",
+      "choices": [
+        1e-5,
+        2e-5,
+        5e-6,
+        7.5e-6
+      ]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "warmup_steps",
+      "choices": [
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "dropout_task",
+      "choices": [
+        0.0,
+        0.1
+      ]
+    }
+  }
+]

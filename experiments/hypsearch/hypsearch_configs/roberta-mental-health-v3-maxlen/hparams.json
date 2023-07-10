@@ -1,0 +1,71 @@
+[
+    {
+      "type": "loguniform",
+      "attributes": {
+        "name": "learning_rate",
+        "low": 1e-6,
+        "high": 3e-5
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "per_device_train_batch_size",
+        "choices": [
+          2,
+          4,
+          8
+        ]
+      }
+    },
+    {
+      "type": "int",
+      "attributes": {
+        "name": "warmup_steps",
+        "low": 0,
+        "high": 300,
+        "step": 100
+      }
+    },
+    {
+      "type": "float",
+      "attributes": {
+        "name": "dropout_task",
+        "low": 0.0,
+        "high": 0.5,
+        "step": 0.1
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "weight_decay",
+        "choices": [
+          0.0,
+          0.01,
+          0.1
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "adam_epsilon",
+        "choices": [
+          1e-8,
+          1e-7,
+          1e-6
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "apply_class_weights",
+        "choices": [
+          false,
+          true
+        ]
+      }
+    }
+]

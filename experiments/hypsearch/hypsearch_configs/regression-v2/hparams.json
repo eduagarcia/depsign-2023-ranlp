@@ -1,0 +1,47 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          2e-6,
+          4e-6,
+          6e-6,
+          8e-6
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "dropout_task",
+        "choices": [
+          0.0,
+          0.2,
+          0.4
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "weight_decay",
+        "choices": [
+          0.0,
+          0.001,
+          0.01
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "custom_loss",
+        "choices": [
+          "MSE",
+          "MAE",
+          "Huber"
+        ]
+      }
+    }
+]

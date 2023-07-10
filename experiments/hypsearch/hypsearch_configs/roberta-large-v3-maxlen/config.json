@@ -1,0 +1,8 @@
+{
+    "sampler": {
+        "type": "TPESampler",
+        "attributes" : {
+            "n_startup_trials": 10
+        }
+    } 
+}

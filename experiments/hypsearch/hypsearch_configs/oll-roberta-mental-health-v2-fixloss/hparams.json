@@ -1,0 +1,44 @@
+[
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "train_file",
+        "choices": [
+          "/raid/juliana/depsign/data/train_initial.csv",
+          "/raid/juliana/depsign/data/train_oversampled.csv"
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "learning_rate",
+        "choices": [
+          4e-6,
+          6e-6,
+          8e-6
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "dropout_task",
+        "choices": [
+          0.0,
+          0.1,
+          0.4
+        ]
+      }
+    },
+    {
+      "type": "categorical",
+      "attributes": {
+        "name": "oll_alpha",
+        "choices": [
+          1.0,
+          1.5
+        ]
+      }
+    }
+]
