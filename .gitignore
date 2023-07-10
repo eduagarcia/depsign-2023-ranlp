@@ -1,5 +1,27 @@
 *.sqlite3
 output/
+runs/
+wandb/
+models/
+cache/
+*.csv
+*.txt
+docker/
+*.pickle
+*.pdf
+*.bin
+
+experiments/deberta/RTD
+experiments/deberta/wiki103
+experiments/roberta
+experiments/trained_models
+experiments/kfold
+
+# debian
+..gitignore.swp
+.bash_history
+.netrc
+.python_history
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,visualstudiocode,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,jupyternotebooks,visualstudiocode,linux
