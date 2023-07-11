@@ -11,7 +11,8 @@
 </div>
 
 
-Submission files are available on [submissions directory](submissions/).
+- Submission files are available on [submissions directory](submissions/).
+- Hyperparements used are defined on [config directory](config/). 
 
 ## Requirements
 
