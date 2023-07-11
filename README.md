@@ -12,27 +12,14 @@
 
 
 Submission files are available on [submissions directory](submissions/).
-## Installation
+
+## Requirements
 
 ```bash
-pip install -r requirements.txt
+pip install -r docker/requirements.txt
 ```
+
 All experiments were made on V100 GPU (32GB).
-
-
-## How-to
-
-1. Train ensemble
-
-```bash
-bash SOE/train_ensemble.sh
-```
-
-2. Predict ensemble
-
-```bash
-bash SOE/predict_ensemble.sh
-```
 
 <!---##  Citation
 ```bibtex
