@@ -1,17 +1,17 @@
 <br />
 <div align="center">
     <h1 align="center">DepSign@RANLP2023</h1>
-    <img src="https://images.emojiterra.com/twitter/v14.0/512px/1f3c6.png" alt="https://emojiterra.com/trophy" width="200">
+    <img src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/1f614.svg" alt="https://emojiterra.com/pensive-face/" width="200">
   
   <br />
 
   <br />
   
-  [Deep Learning Brasil group](https://www.linkedin.com/company/inteligencia-artificial-deep-learning-brasil) submission at [ABSAPT 2022](https://sites.google.com/inf.ufpel.edu.br/absapt2022/).
+  [Deep Learning Brasil group](https://www.linkedin.com/company/inteligencia-artificial-deep-learning-brasil) submission at [Depsign 2023](https://sites.google.com/view/lt-edi-2023/tasks).
 </div>
 
 
-Submission files are available on [DeepLearningBrasil_task1.csv](DeepLearningBrasil_task1.csv) and [DeepLearningBrasil_task2.csv](DeepLearningBrasil_task2.csv). Here is the [presentation](presentation.pdf).
+Submission files are available on [submissions directory](submissions/).
 ## Installation
 
 ```bash
@@ -34,7 +34,7 @@ bash SOE/train_ensemble.sh
 bash SOE/predict_ensemble.sh
 ```
 
-##  Citation
+<!---##  Citation
 ```bibtex
 @inproceedings{gomes2022deep,
   title={Deep learning brasil at absapt 2022: Portuguese transformer ensemble approaches},
@@ -42,11 +42,7 @@ bash SOE/predict_ensemble.sh
   booktitle={Proceedings of the Iberian Languages Evaluation F{\'o}rum (IberLEF 2022), co-located with the 38th Conference of the Spanish Society for Natural Language Processing (SEPLN 2022), Online. CEUR. org},
   year={2022}
 }
-```
-
-## License
-
-This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/). See `LICENSE.txt` for more information.
+```--->
 
 ## Acknowledgments
 
