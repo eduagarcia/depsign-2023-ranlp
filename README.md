@@ -10,10 +10,6 @@
   [Deep Learning Brasil group](https://www.linkedin.com/company/inteligencia-artificial-deep-learning-brasil) submission at [Depsign 2023](https://sites.google.com/view/lt-edi-2023/tasks).
 </div>
 
-
-- Submission files are available on [submissions directory](submissions/).
-- Hyperparements used are defined on [config directory](config/). 
-
 ## Requirements
 
 ```bash
