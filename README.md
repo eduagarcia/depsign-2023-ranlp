@@ -10,7 +10,7 @@
   [Deep Learning Brasil group](https://www.linkedin.com/company/inteligencia-artificial-deep-learning-brasil) submission at [Depsign 2023](https://sites.google.com/view/lt-edi-2023/tasks).
 </div>
 
-We released our [MentalBERTa model](https://huggingface.co/dlb/MentalBERTa) on HuggingFace Hub.
+We released our [MentalBERTa model](https://huggingface.co/dlb/MentalBERTa) and [pretraining data](https://huggingface.co/datasets/dlb/mentalreddit) on HuggingFace Hub.
 ## Requirements
 
 ```bash
@@ -18,8 +18,6 @@ pip install -r docker/requirements.txt
 ```
 
 All experiments were made on V100 GPU (32GB).
-
-## 
 
 <!---##  Citation
 ```bibtex
