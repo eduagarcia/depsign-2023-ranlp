@@ -19,15 +19,30 @@ pip install -r docker/requirements.txt
 
 All experiments were made on V100 GPU (32GB).
 
-<!---##  Citation
+##  Citation
+
 ```bibtex
-@inproceedings{gomes2022deep,
-  title={Deep learning brasil at absapt 2022: Portuguese transformer ensemble approaches},
-  author={Gomes, JRS and Rodrigues, RC and Garcia, EAS and Junior, AFB and Silva, Diogo Fernandes Costa and Maia, Dyonnatan Ferreira},
-  booktitle={Proceedings of the Iberian Languages Evaluation F{\'o}rum (IberLEF 2022), co-located with the 38th Conference of the Spanish Society for Natural Language Processing (SEPLN 2022), Online. CEUR. org},
-  year={2022}
+@inproceedings{garcia-etal-2023-deeplearningbrasil,
+    title = "{D}eep{L}earning{B}rasil@{LT}-{EDI}-2023: Exploring Deep Learning Techniques for Detecting Depression in Social Media Text",
+    author = "Garcia, Eduardo  and
+      Gomes, Juliana  and
+      Barbosa Junior, Adalberto Ferreira  and
+      Borges, Cardeque Henrique Bittes de Alvarenga  and
+      da Silva, Nadia F{\'e}lix Felipe",
+    editor = "Chakravarthi, Bharathi R.  and
+      Bharathi, B.  and
+      Griffith, Joephine  and
+      Bali, Kalika  and
+      Buitelaar, Paul",
+    booktitle = "Proceedings of the Third Workshop on Language Technology for Equality, Diversity and Inclusion",
+    month = sep,
+    year = "2023",
+    address = "Varna, Bulgaria",
+    publisher = "INCOMA Ltd., Shoumen, Bulgaria",
+    url = "https://aclanthology.org/2023.ltedi-1.42",
+    pages = "272--278",
 }
-```--->
+```
 
 ## Acknowledgments
 
